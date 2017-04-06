@@ -1,0 +1,19 @@
+{
+  "name": "file-copy-plugin",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/configurator/file-copy-plugin.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/configurator/file-copy-plugin/issues"
+  },
+  "homepage": "https://github.com/configurator/file-copy-plugin#readme",
+  "dependencies": {
+    "glob": "^7.1.1"
+  }
+}
