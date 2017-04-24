@@ -5,9 +5,24 @@ const path = require('path');
 const glob = require('glob');
 
 const defaultOptions = {
+	// Path to look in
 	path: '.',
+
+	// Glob for files to find in path
 	glob: '**/*',
-	test: true
+
+	// A function to run on each found file to decide whether or not to include it
+	// Can also be a boolean to include/exclude all files
+	test: true,
+
+	// Only copy a single file
+	singleFile: false,
+
+	// Only valid in combination with singleFile; the name for the output file
+	outputFileName: '',
+
+	// Set to true to disable console output
+	verbose: false,
 };
 
 const getOptions = function (options) {
@@ -33,7 +48,7 @@ const testFunction = function (test) {
 	}
 };
 
-class NgtemplatesAutoLoaderPlugin {
+class FileCopyPlugin {
 	constructor(options) {
 		this.options = getOptions(options);
 		this.options.testFunction = testFunction(this.options.test);
@@ -43,28 +58,45 @@ class NgtemplatesAutoLoaderPlugin {
 		const options = this.options;
 
 		compiler.plugin('emit', (compilation, callback) => {
-			glob(options.glob, { cwd: options.path, nodir: true }, (err, files) => {
-				if (err) {
-					throw 'FileCopyPlugin: Error occured searching for files.';
-				}
-
-				for (let file of files) {
-					if (options.testFunction(file)) {
-						let fullPath = path.join(options.path, file);
+			const generateFiles = function (files) {
+				for (let { filename, fullPath } of files) {
+					if (options.testFunction(filename)) {
 						let asset = fs.readFileSync(fullPath);
-						compilation.assets[file] = {
+						compilation.assets[filename] = {
 							source: () => asset,
 							size: () => asset.length
 						};
 					}
 				}
 
-				console.log(`FileCopyPlugin: ${files.length} files emitted`);
+				if (options.verbose) {
+					console.log(`FileCopyPlugin: ${files.length} files emitted`);
+				}
+			}
+
+			if (options.singleFile) {
+				generateFiles([{
+					filename: options.outputFileName,
+					fullPath: options.path
+				}]);
 
 				callback();
-			});
+			} else {
+				glob(options.glob, { cwd: options.path, nodir: true }, (err, files) => {
+					if (err) {
+						throw 'FileCopyPlugin: Error occured searching for files.';
+					}
+
+					generateFiles(files.map(file => ({
+						filename: file,
+						fullPath: path.join(options.path, file)
+					})));
+
+					callback();
+				});
+			}
 		});
 	}
 }
 
-module.exports = NgtemplatesAutoLoaderPlugin;
+module.exports = FileCopyPlugin;
