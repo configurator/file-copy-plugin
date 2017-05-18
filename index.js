@@ -21,6 +21,9 @@ const defaultOptions = {
 	// Only valid in combination with singleFile; the name for the output file
 	outputFileName: '',
 
+	// Ignored when used with singleFile; the base path for the output
+	outputPath: '',
+
 	// Set to true to disable console output
 	verbose: false,
 };
@@ -88,7 +91,7 @@ class FileCopyPlugin {
 					}
 
 					generateFiles(files.map(file => ({
-						filename: file,
+						filename: path.join(options.outputPath, file),
 						fullPath: path.join(options.path, file)
 					})));
 
