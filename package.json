@@ -1,6 +1,6 @@
 {
   "name": "file-copy-plugin",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "",
   "main": "index.js",
   "repository": {
@@ -15,5 +15,8 @@
   "homepage": "https://github.com/configurator/file-copy-plugin#readme",
   "dependencies": {
     "glob": "^7.1.1"
+  },
+  "peerDependencies": {
+    "webpack": "^2.3.3 || ^3.0.0"
   }
 }
